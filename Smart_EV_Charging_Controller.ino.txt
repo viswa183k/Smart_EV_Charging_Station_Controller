@@ -1,0 +1,39 @@
+#include <LiquidCrystal.h>
+
+LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
+const int voltagePin = A0;
+const int currentPin = A1;
+const int tempPin = A2;
+const int relayPin = 8;
+float voltage, current, temp;
+
+void setup() {
+  pinMode(relayPin, OUTPUT);
+  lcd.begin(16,2);
+  lcd.print("EV Charging Ctrl");
+  delay(2000);
+  lcd.clear();
+}
+
+void loop() {
+  voltage = analogRead(voltagePin) * (25.0 / 1023.0);
+  current = analogRead(currentPin) * (5.0 / 1023.0) * 10.0; // example scaling
+  temp = analogRead(tempPin) * (5.0 / 1023.0) * 100.0;
+
+  lcd.setCursor(0,0);
+  lcd.print("V:");
+  lcd.print(voltage,1);
+  lcd.print(" I:");
+  lcd.print(current,1);
+
+  lcd.setCursor(0,1);
+  lcd.print("T:");
+  lcd.print(temp,1);
+
+  if(voltage>24.0 || temp>50.0){
+    digitalWrite(relayPin, LOW); // stop charging
+  } else {
+    digitalWrite(relayPin, HIGH); // allow charging
+  }
+  delay(1000);
+}
